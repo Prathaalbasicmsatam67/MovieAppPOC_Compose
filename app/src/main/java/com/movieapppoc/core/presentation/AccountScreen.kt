@@ -14,7 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.movieapppoc.movielist.util.Screen
-import com.movieapppoc.signup.presentation.SignInScreen
+import com.movieapppoc.signin.presentation.SignInScreen
 import com.movieapppoc.signup.presentation.SignUpScreen
 import com.movieapppoc.signup.presentation.TermsAndCondition
 
@@ -45,6 +45,10 @@ fun AccountScreen() {
                 composable(Screen.SignIn.rout) {
                     SignInScreen(navigateToSignUp = {
                         navController.navigate(Screen.SignUp.rout) {
+                            popUpTo(navController.graph.id)
+                        }
+                    }, onSignInSuccess = {
+                        navController.navigate(Screen.Home.rout) {
                             popUpTo(navController.graph.id)
                         }
                     })

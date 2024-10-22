@@ -1,6 +1,7 @@
 package com.pratham.movieapppoc.movielist.data.repository
 
 import app.cash.turbine.test
+import com.movieapppoc.common.kotlin.coroutine.api.DispatcherProvider
 import com.movieapppoc.movielist.data.local.MovieEntity
 import com.movieapppoc.movielist.data.local.MovieLocalDataSource
 import com.movieapppoc.movielist.data.remote.MovieRemoteDataSource
@@ -8,6 +9,7 @@ import com.movieapppoc.movielist.data.repository.MovieListRepositoryImpl
 import com.movieapppoc.movielist.domain.repository.MovieListRepository
 import com.movieapppoc.movielist.util.Resource
 import com.movieapppoc.movielist.util.network.ConnectivityProvider
+import com.pratham.movieapppoc.common.TestDispatcherProvider
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
@@ -33,13 +35,17 @@ class MovieListRepositoryTest {
     @Mock
     private lateinit var connectivityProvider: ConnectivityProvider
 
+    @Mock
+    private val dispatcherProvider: DispatcherProvider = TestDispatcherProvider()
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
         sut = MovieListRepositoryImpl(
             movieRemoteDataSource = movieRemoteDataSource,
             movieLocalDataSource = movieLocalDataSource,
-            connectivityProvider = connectivityProvider
+            connectivityProvider = connectivityProvider,
+            dispatcherProvider = dispatcherProvider
         )
     }
 

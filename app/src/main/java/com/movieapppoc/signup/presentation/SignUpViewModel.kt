@@ -68,6 +68,7 @@ class SignUpViewModel : ViewModel() {
             is UIEvent.RegisterButtonClicked -> {
                 signUpAction()
             }
+            else -> Unit
         }
     }
 

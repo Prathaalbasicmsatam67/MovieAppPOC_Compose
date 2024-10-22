@@ -41,35 +41,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.Home.rout
-                    ) {
-
-                        composable(
-                            Screen.Account.rout,
-                            deepLinks = Screen.Account.deepLink
-                        ) {
-                            AccountScreen()
-                        }
-
-                        composable(Screen.Home.rout) {
-                            HomeScreen(onProfileIconClick = {
-                                navController.navigate(Screen.Account.rout)
-                            }, onMovieItemClick = {
-                                navController.navigate(Screen.Details.rout + "/${it}")
-                            })
-                        }
-                        composable(
-                            Screen.Details.routeWithArgs,
-                            arguments = Screen.Details.argument,
-                            deepLinks = Screen.Details.deepLink
-                        ) { backStackEntry ->
-                            val movieId =
-                                backStackEntry.arguments?.getString(Screen.Details.movieIdArg)
-                        }
-                    }
+                    RootNavigationGraph()
                 }
             }
         }

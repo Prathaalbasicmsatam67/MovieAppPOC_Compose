@@ -1,6 +1,5 @@
 package com.movieapppoc.movielist.presentation.components
 
-import android.media.Rating
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,6 +33,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role.Companion.Image
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -52,7 +51,7 @@ import com.movieapppoc.movielist.util.getAverageColor
 @Composable
 fun MovieItem(
     movie: Movie,
-    onMovieItemClick : (movieId: Int) -> Unit
+    onMovieItemClick: (movieId: Int) -> Unit
 ) {
     val imageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -86,22 +85,7 @@ fun MovieItem(
 
 
     ) {
-        if (imageState is AsyncImagePainter.State.Error) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(6.dp)
-                    .height(250.dp)
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.ImageNotSupported,
-                    contentDescription = movie.title
-                )
-            }
-        } else if (imageState is AsyncImagePainter.State.Success) {
+        if (imageState is AsyncImagePainter.State.Success) {
             dominantColor = getAverageColor(
                 imageBitmap = imageState.result.drawable.toBitmap().asImageBitmap()
             )
@@ -116,34 +100,65 @@ fun MovieItem(
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = movie.title ?: "",
-                modifier = Modifier.padding(start = 16.dp, end = 8.dp),
-                color = Color.White,
-                fontSize = 15.sp,
-                maxLines = 1
-            )
-
-            Row(
+        } else {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, bottom = 12.dp, top = 4.dp)
+                    .padding(6.dp)
+                    .height(250.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
             ) {
-                RatingBar(
-                    starsModifier = Modifier.size(18.dp),
-                    rating = movie.vote_average?.div(2) ?: 0.0
-                )
-
-                Text(
-                    text = movie.vote_average.toString().take(3),
-                    modifier = Modifier.padding(start = 4.dp),
-                    color = Color.LightGray,
-                    fontSize = 14.sp,
-                    maxLines = 1
+                Icon(
+                    imageVector = Icons.Rounded.ImageNotSupported,
+                    contentDescription = movie.title
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = movie.title ?: "",
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+            color = Color.White,
+            fontSize = 15.sp,
+            maxLines = 1
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, bottom = 12.dp, top = 4.dp)
+        ) {
+            RatingBar(
+                starsModifier = Modifier.size(18.dp),
+                rating = movie.vote_average?.div(2) ?: 0.0
+            )
+
+            Text(
+                text = movie.vote_average.toString().take(3),
+                modifier = Modifier.padding(start = 4.dp),
+                color = Color.LightGray,
+                fontSize = 14.sp,
+                maxLines = 1
+            )
+        }
     }
+}
+
+@Preview
+@Composable
+private fun MovieItemPreview() {
+    MovieItem(
+        movie = Movie(
+            adult = true,
+            title = "Movie Name",
+            category = "",
+            backdrop_path = "https://image.tmdb.org/t/p/w500/vViRXFnSyGJ2fzMbcc5sqTKswcd.jpg",
+            poster_path = "https://image.tmdb.org/t/p/w500/eLzStFuergouErSQlfABthuQHCJ.jpg",
+            vote_average = 9.5
+        )
+    ) {}
 }

@@ -81,89 +81,25 @@ fun SignUpScreen(
         contentAlignment = Alignment.Center
     ) {
 
-
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(dimensionResource(id = R.dimen.signup_screen_padding))
-            ) {
-
-                NormalTextComponent(value = stringResource(R.string.hello))
-                HeadingTextComponent(value = stringResource(R.string.create_an_account))
-
-
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.signup_spacer_top)))
-
-                AppTextField(
-                    labelValue = stringResource(R.string.first_name),
-                    imageVector = Icons.Filled.Face,
-                    isError = signUpViewModel.signUpUIState.value.fNameError ?: false,
-                    textValue = uiState.value.firstName,
-                    onTextChange = {
-                        signUpViewModel.onEvent(UIEvent.FirstNameChanged(it))
-                    }
-                )
-                AppTextField(
-                    labelValue = stringResource(R.string.last_name),
-                    imageVector = Icons.Filled.Face,
-                    isError = signUpViewModel.signUpUIState.value.lNameError,
-                    textValue = uiState.value.lastName,
-                    onTextChange = {
-                        signUpViewModel.onEvent(UIEvent.LastNameChanged(it))
-                    }
-                )
-                AppTextField(
-                    labelValue = stringResource(R.string.email),
-                    imageVector = Icons.Filled.Email,
-                    isError = signUpViewModel.signUpUIState.value.emailError,
-                    textValue = uiState.value.email,
-                    onTextChange = {
-                        signUpViewModel.onEvent(UIEvent.EmailChanged(it))
-                    }
-                )
-                AppPasswordTextField(
-                    labelValue = stringResource(R.string.password),
-                    imageVector = Icons.Filled.Password,
-                    isError = signUpViewModel.signUpUIState.value.passError,
-                ) {
-                    signUpViewModel.onEvent(UIEvent.PasswordChanged(it))
+        SingUpContent(
+            firstName = uiState.value.firstName,
+            firstNameError = signUpViewModel.signUpUIState.value.fNameError,
+            lastName = uiState.value.lastName,
+            lastNameError = uiState.value.lNameError,
+            email = uiState.value.email,
+            emailError = uiState.value.emailError,
+            passError = uiState.value.passError,
+            signUpError = uiState.value.signUpError,
+            navigateToTerms = { navController?.navigate(Screen.TermsAndCondition.rout) },
+            navigateToSignIn = {
+                navController?.navigate(Screen.SignIn.rout) {
+                    popUpTo(navController.graph.id)
                 }
-
-                CheckboxComponent(value = stringResource(R.string.terms_and_condition),
-                    onTextSelected = {
-                        navController?.navigate(Screen.TermsAndCondition.rout)
-                    })
-
-                Spacer(modifier = Modifier.heightIn(50.dp))
-
-                ErrorTextComponent(value = signUpViewModel.signUpUIState.value.signUpError)
-                Spacer(modifier = Modifier.heightIn(10.dp))
-                ButtonComponent(stringResource(R.string.sign_up)) {
-                    signUpViewModel.onEvent(UIEvent.RegisterButtonClicked)
-                }
-
-                Spacer(modifier = Modifier.heightIn(30.dp))
-
-                DividerComponent()
-
-                Spacer(modifier = Modifier.heightIn(20.dp))
-
-                ClickableLoginTextComponent(
-                    initialText = "Already have an account ",
-                    clickableText = "Sign In"
-                ) {
-                    navController?.navigate(Screen.SignIn.rout) {
-                        popUpTo(navController.graph.id)
-                    }
-                }
-            }
+            },
+        ) { event ->
+            signUpViewModel.onEvent(event)
         }
+
 
         if (signUpViewModel.loadingProgressState.value) {
             CircularProgressIndicator()
@@ -172,6 +108,101 @@ fun SignUpScreen(
 
     }
 }
+
+@Composable
+fun SingUpContent(
+    firstName: String,
+    firstNameError: Boolean,
+    lastName: String,
+    lastNameError: Boolean,
+    email: String,
+    emailError: Boolean,
+    passError: Boolean,
+    signUpError: String,
+    navigateToTerms: () -> Unit,
+    navigateToSignIn: () -> Unit,
+    onUiEvent: (UIEvent) -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(dimensionResource(id = R.dimen.signup_screen_padding))
+        ) {
+
+            NormalTextComponent(value = stringResource(R.string.hello))
+            HeadingTextComponent(value = stringResource(R.string.create_an_account))
+
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.signup_spacer_top)))
+
+            AppTextField(
+                labelValue = stringResource(R.string.first_name),
+                imageVector = Icons.Filled.Face,
+                isError = firstNameError,
+                textValue = firstName,
+                onTextChange = {
+                    onUiEvent(UIEvent.FirstNameChanged(it))
+                }
+            )
+            AppTextField(
+                labelValue = stringResource(R.string.last_name),
+                imageVector = Icons.Filled.Face,
+                isError = lastNameError,
+                textValue = lastName,
+                onTextChange = {
+                    onUiEvent(UIEvent.LastNameChanged(it))
+                }
+            )
+            AppTextField(
+                labelValue = stringResource(R.string.email),
+                imageVector = Icons.Filled.Email,
+                isError = emailError,
+                textValue = email,
+                onTextChange = {
+                    onUiEvent(UIEvent.EmailChanged(it))
+                }
+            )
+            AppPasswordTextField(
+                labelValue = stringResource(R.string.password),
+                imageVector = Icons.Filled.Password,
+                isError = passError,
+            ) {
+                onUiEvent(UIEvent.PasswordChanged(it))
+            }
+
+            CheckboxComponent(value = stringResource(R.string.terms_and_condition),
+                onTextSelected = { navigateToTerms.invoke() })
+
+            Spacer(modifier = Modifier.heightIn(50.dp))
+
+            ErrorTextComponent(value = signUpError)
+            Spacer(modifier = Modifier.heightIn(10.dp))
+            ButtonComponent(stringResource(R.string.sign_up)) {
+                onUiEvent(UIEvent.RegisterButtonClicked)
+            }
+
+            Spacer(modifier = Modifier.heightIn(30.dp))
+
+            DividerComponent()
+
+            Spacer(modifier = Modifier.heightIn(20.dp))
+
+            ClickableLoginTextComponent(
+                initialText = "Already have an account ",
+                clickableText = "Sign In"
+            ) {
+                navigateToSignIn.invoke()
+            }
+        }
+    }
+}
+
 
 @Composable
 fun DividerComponent() {

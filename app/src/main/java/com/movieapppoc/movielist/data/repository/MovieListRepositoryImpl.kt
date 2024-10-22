@@ -3,6 +3,7 @@ package com.movieapppoc.movielist.data.repository
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
+import com.movieapppoc.common.kotlin.coroutine.api.DispatcherProvider
 import com.movieapppoc.movielist.data.local.MovieLocalDataSource
 import com.movieapppoc.movielist.data.mappers.toMovie
 import com.movieapppoc.movielist.data.mappers.toMovieEntity
@@ -22,7 +23,8 @@ import javax.inject.Inject
 class MovieListRepositoryImpl @Inject constructor(
     private val movieRemoteDataSource: MovieRemoteDataSource,
     private val movieLocalDataSource: MovieLocalDataSource,
-    private val connectivityProvider: ConnectivityProvider
+    private val connectivityProvider: ConnectivityProvider,
+    private val dispatcherProvider: DispatcherProvider
 ) : MovieListRepository {
 
     override suspend fun getMovieList(
@@ -62,7 +64,7 @@ class MovieListRepositoryImpl @Inject constructor(
                 movieEntities.map { it.toMovie(category) }
             ))
             emit(Resource.Loading(false))
-        }.flowOn(Dispatchers.IO)
+        }.flowOn(dispatcherProvider.io)
     }
 
     override suspend fun getMovie(id: Int): Flow<Resource<Movie>> {
@@ -79,6 +81,6 @@ class MovieListRepositoryImpl @Inject constructor(
 
             emit(Resource.Loading(false))
             return@flow
-        }.flowOn(Dispatchers.IO)
+        }.flowOn(dispatcherProvider.io)
     }
 }
