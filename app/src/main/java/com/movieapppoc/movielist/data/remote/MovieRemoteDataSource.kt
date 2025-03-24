@@ -1,6 +1,7 @@
 package com.movieapppoc.movielist.data.remote
 
-import com.movieapppoc.movielist.data.remote.response.MovieListDto
+import com.pratham.networkmodule.MovieApi
+import com.pratham.networkmodule.response.MovieListDto
 import javax.inject.Inject
 
 class MovieRemoteDataSource @Inject constructor(

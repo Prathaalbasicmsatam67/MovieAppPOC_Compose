@@ -2,8 +2,8 @@ package com.pratham.movieapppoc.network
 
 import com.movieapppoc.movielist.data.remote.MovieApi
 import com.movieapppoc.movielist.data.remote.MovieRemoteDataSource
-import com.movieapppoc.movielist.data.remote.response.MovieDto
-import com.movieapppoc.movielist.data.remote.response.MovieListDto
+import com.pratham.networkmodule.response.MovieDto
+import com.pratham.networkmodule.response.MovieListDto
 import com.pratham.movieapppoc.extensions.enqueueResponse
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi

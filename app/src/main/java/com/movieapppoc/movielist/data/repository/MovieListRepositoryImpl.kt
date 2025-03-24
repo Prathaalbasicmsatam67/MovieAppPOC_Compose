@@ -1,9 +1,7 @@
 package com.movieapppoc.movielist.data.repository
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresExtension
-import com.movieapppoc.common.kotlin.coroutine.api.DispatcherProvider
+//import com.movieapppoc.common.kotlin.coroutine.api.DispatcherProvider
 import com.movieapppoc.movielist.data.local.MovieLocalDataSource
 import com.movieapppoc.movielist.data.mappers.toMovie
 import com.movieapppoc.movielist.data.mappers.toMovieEntity
@@ -11,10 +9,13 @@ import com.movieapppoc.movielist.data.remote.MovieRemoteDataSource
 import com.movieapppoc.movielist.domain.model.Movie
 import com.movieapppoc.movielist.domain.repository.MovieListRepository
 import com.movieapppoc.movielist.util.Resource
-import com.movieapppoc.movielist.util.exceptions.ClientErrorException
-import com.movieapppoc.movielist.util.exceptions.ServerErrorException
-import com.movieapppoc.movielist.util.network.ConnectivityProvider
-import kotlinx.coroutines.Dispatchers
+import com.pratham.coroutine_common.api.DispatcherProvider
+import com.pratham.networkmodule.ConnectivityProvider
+import com.pratham.networkmodule.exceptions.ClientErrorException
+import com.pratham.networkmodule.exceptions.ServerErrorException
+//import com.movieapppoc.movielist.util.exceptions.ClientErrorException
+//import com.movieapppoc.movielist.util.exceptions.ServerErrorException
+//import com.movieapppoc.movielist.util.network.ConnectivityProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -34,9 +35,9 @@ class MovieListRepositoryImpl @Inject constructor(
         return flow {
             Log.d("MovieListRepository", "threadName: ${Thread.currentThread().name}")
             emit(Resource.Loading(true))
-            val localMovieList = movieLocalDataSource.getMovieByCategory(category)
             val shouldLoadLocalMovies = !connectivityProvider.isConnected()
             if (shouldLoadLocalMovies) {
+                val localMovieList = movieLocalDataSource.getMovieByCategory(category)
                 emit(Resource.Success(
                     data = localMovieList!!.map { movieEntity ->
                         movieEntity.toMovie(category)
@@ -45,8 +46,19 @@ class MovieListRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(false))
                 return@flow
             }
-            val movieListFromAPI = try {
-                movieRemoteDataSource.getMoviesList(category, page)
+            try {
+                val movieListFromAPI = movieRemoteDataSource.getMoviesList(category, page)
+
+                val movieEntities = movieListFromAPI.results.let {
+                    it.map { movieDto -> movieDto.toMovieEntity(category) }
+                }
+                movieLocalDataSource.upsertMovieList(movieEntities)
+
+                emit(Resource.Success(
+                    movieEntities.map { it.toMovie(category) }
+                ))
+                emit(Resource.Loading(false))
+
             } catch (e: Throwable) {
                 e.printStackTrace()
                 if (e is ServerErrorException || e is ClientErrorException)
@@ -55,15 +67,6 @@ class MovieListRepositoryImpl @Inject constructor(
                     emit(Resource.Error(message = "Error Loading movies"))
                 return@flow
             }
-            val movieEntities = movieListFromAPI.results.let {
-                it.map { movieDto -> movieDto.toMovieEntity(category) }
-            }
-            movieLocalDataSource.upsertMovieList(movieEntities)
-
-            emit(Resource.Success(
-                movieEntities.map { it.toMovie(category) }
-            ))
-            emit(Resource.Loading(false))
         }.flowOn(dispatcherProvider.io)
     }
 

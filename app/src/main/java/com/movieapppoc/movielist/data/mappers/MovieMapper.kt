@@ -1,7 +1,7 @@
 package com.movieapppoc.movielist.data.mappers
 
 import com.movieapppoc.movielist.data.local.MovieEntity
-import com.movieapppoc.movielist.data.remote.response.MovieDto
+import com.pratham.networkmodule.response.MovieDto
 import com.movieapppoc.movielist.domain.model.Movie
 
 fun MovieEntity.toMovie(

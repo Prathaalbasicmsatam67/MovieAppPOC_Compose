@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "MovieAppPOC"
 include(":app")
- 
+include(":coroutine-common")
+include(":network-module")

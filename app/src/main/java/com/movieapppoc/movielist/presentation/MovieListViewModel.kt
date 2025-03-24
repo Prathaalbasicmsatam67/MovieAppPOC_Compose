@@ -50,8 +50,6 @@ class MovieListViewModel @Inject constructor(
 
     private fun getPopularMovieList() {
         viewModelScope.launch {
-
-
             movieListRepository.getMovieList(
                 Category.POPULAR,
                 movieListState.value.popularMovieListPage

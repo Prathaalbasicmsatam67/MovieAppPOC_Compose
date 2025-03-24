@@ -42,11 +42,12 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.movieapppoc.movielist.data.remote.MovieApi
+//import com.movieapppoc.movielist.data.remote.MovieApi
 import com.movieapppoc.movielist.domain.model.Movie
 import com.movieapppoc.movielist.util.RatingBar
 import com.movieapppoc.movielist.util.Screen
 import com.movieapppoc.movielist.util.getAverageColor
+import com.pratham.networkmodule.MovieApi
 
 @Composable
 fun MovieItem(
